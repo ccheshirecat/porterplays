@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import hero from "@/components/images/porter2.png"
 export default function HeroSection() {
   return (
-    <section className="relative py-12 md:py-24 lg:py-32 bg-background">
+    <section className="relative py-12 md:mt-4 py-24 lg:mt-4 py-32 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-screen-xl">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           <div className="flex flex-col justify-center space-y-8">

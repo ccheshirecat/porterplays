@@ -1,9 +1,11 @@
-"use client"
+'use client'
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { auth } from "@/lib/firebase"
 import {
   Dialog,
   DialogContent,
@@ -23,17 +25,78 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { useMediaQuery } from "@/hooks/use-media-query"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { CheckCircle2, AlertCircle } from "lucide-react"
 
 export default function SignInPopup() {
   const [open, setOpen] = useState(false)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
   const isMobile = useMediaQuery("(max-width: 640px)")
 
-  const handleSignIn = (event: React.FormEvent) => {
+  const handleSignIn = async (event: React.FormEvent) => {
     event.preventDefault()
-    // Handle sign in logic here
-    console.log("Sign in submitted")
-    setOpen(false)
+    setError(null)
+    setSuccess(null)
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+      console.log("Signed in user:", user)
+      setSuccess("Successfully signed in!")
+      setTimeout(() => {
+        setOpen(false)
+        setSuccess(null)
+      }, 2000)
+    } catch (error) {
+      setError((error as Error).message)
+    }
   }
+
+  const content = (
+    <>
+      <form onSubmit={handleSignIn} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+        <Button type="submit">Sign In</Button>
+      </form>
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="default" className="bg-green-100 border-green-500">
+          <CheckCircle2 className="h-4 w-4 text-green-600" />
+          <AlertTitle className="text-green-800">Success</AlertTitle>
+          <AlertDescription className="text-green-700">{success}</AlertDescription>
+        </Alert>
+      )}
+    </>
+  )
 
   if (isMobile) {
     return (
@@ -48,24 +111,14 @@ export default function SignInPopup() {
               Enter your email and password to access your account.
             </DrawerDescription>
           </DrawerHeader>
-          <form onSubmit={handleSignIn} className="px-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="Enter your email" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="Enter your password" />
-              </div>
-            </div>
-            <DrawerFooter className="pt-4">
-              <Button type="submit">Sign In</Button>
-              <DrawerClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DrawerClose>
-            </DrawerFooter>
-          </form>
+          <div className="px-4">
+            {content}
+          </div>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     )
@@ -83,17 +136,7 @@ export default function SignInPopup() {
             Enter your email and password to access your account.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSignIn} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="Enter your email" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="Enter your password" />
-          </div>
-          <Button type="submit">Sign In</Button>
-        </form>
+        {content}
       </DialogContent>
     </Dialog>
   )
