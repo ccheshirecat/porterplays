@@ -1,7 +1,8 @@
 'use client'
 
 import { CircleUser, Menu, ChevronDown, User, Settings, LogOut, Home, X } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { DiscordLogoIcon } from "@radix-ui/react-icons"
+import { useState } from 'react'
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -19,26 +20,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import navlogo from "@/components/images/porter1.png"
-import SignInPopup from "@/components/sign-in-popup"
-import SignUpPopup from "@/components/sign-up-popup"
-import { auth } from "@/lib/firebase"
-import { User as FirebaseUser } from "firebase/auth"
+import { useAuth, useSignIn, useUser } from '@clerk/nextjs'
 
 export function NavMenu() {
   const [isOpen, setIsOpen] = useState(false)
-  const [user, setUser] = useState<FirebaseUser | null>(null)
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user)
-    })
-
-    return () => unsubscribe()
-  }, [])
-
-  const handleSignOut = () => {
-    auth.signOut()
-  }
+  const { isLoaded, signOut } = useAuth()
+  const { user } = useUser()
+  const { signIn } = useSignIn()
 
   const toggleMenu = () => setIsOpen(!isOpen)
 
@@ -107,7 +95,7 @@ export function NavMenu() {
           </NavLink>
         </DropdownMenuItem>
         <DropdownMenuItem className="focus:bg-violet-800 focus:text-violet-100">
-          <NavLink href="#" onClick={handleSignOut}>
+          <NavLink href="#" onClick={() => signOut()}>
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out
           </NavLink>
@@ -115,6 +103,19 @@ export function NavMenu() {
       </DropdownMenuContent>
     </DropdownMenu>
   )
+
+  const handleDiscordSignIn = () => {
+    if (!signIn) {
+      console.error("SignIn object is not available");
+      return;
+    }
+  
+    signIn.authenticateWithRedirect({
+      strategy: "oauth_discord",
+      redirectUrl: "/",
+      redirectUrlComplete: "https://porterplays.vercel.app/",
+    });
+  };
 
   const playItems = [
     { label: "PlayShuffle", href: "#playshuffle" },
@@ -144,14 +145,17 @@ export function NavMenu() {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
-                <span className="text-violet-100">Hello, {user.displayName || user.email}</span>
+                <span className="text-violet-100">Hello, {user.fullName || user.primaryEmailAddress?.emailAddress}</span>
                 <UserMenu />
               </>
             ) : (
-              <>
-                <SignInPopup />
-                <SignUpPopup />
-              </>
+              <Button
+                onClick={handleDiscordSignIn}
+                className="w-full bg-violet-500 hover:bg-violet-600 text-white border-none transition-colors duration-200"
+              >
+                <DiscordLogoIcon className="mr-2 h-5 w-5" />
+                Continue with Discord
+              </Button>
             )}
           </div>
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -184,10 +188,10 @@ export function NavMenu() {
                 <NavLink href="#">Socials</NavLink>
                 <NavLink href="#">Store</NavLink>
               </div>
-              <div className="flex flex-col gap-2 mt-4 md:hidden">
+              <div className="flex flex-col gap-2 mt-4">
                 {user ? (
                   <>
-                    <span className="text-violet-100">Hello, {user.displayName || user.email}</span>
+                    <span className="text-violet-100">Hello, {user.fullName || user.primaryEmailAddress?.emailAddress}</span>
                     <Button variant="outline" onClick={() => {}}>
                       <User className="mr-2 h-4 w-4" />
                       Profile
@@ -196,16 +200,19 @@ export function NavMenu() {
                       <Settings className="mr-2 h-4 w-4" />
                       My Account
                     </Button>
-                    <Button variant="outline" onClick={handleSignOut}>
+                    <Button variant="outline" onClick={() => signOut()}>
                       <LogOut className="mr-2 h-4 w-4" />
                       Sign Out
                     </Button>
                   </>
                 ) : (
-                  <>
-                    <SignInPopup />
-                    <SignUpPopup />
-                  </>
+                  <Button
+                    onClick={handleDiscordSignIn}
+                    className="w-full bg-violet-500 hover:bg-violet-600 text-white border-none transition-colors duration-200"
+                  >
+                    <DiscordLogoIcon className="mr-2 h-5 w-5" />
+                    Continue with Discord
+                  </Button>
                 )}
               </div>
             </SheetContent>
