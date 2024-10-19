@@ -19,6 +19,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Separator } from "@/components/ui/separator"
 import navlogo from "@/components/images/porter1.png"
 import { useAuth, useSignIn, useUser } from '@clerk/nextjs'
 
@@ -33,7 +34,7 @@ export function NavMenu() {
   const NavLink = ({ href, children, onClick }: { href: string; children: React.ReactNode; onClick?: () => void }) => (
     <Link
       href={href}
-      className="font-medium flex items-center text-base transition-colors hover:text-violet-400 text-violet-100 px-2 py-2"
+      className="font-medium flex items-center text-base transition-colors hover:text-violet-400 text-violet-100 px-2 py-2 w-full"
       prefetch={false}
       onClick={(e) => {
         setIsOpen(false);
@@ -60,10 +61,12 @@ export function NavMenu() {
   )
 
   const MobileNavAccordion = ({ trigger, items }: { trigger: string; items: { label: string; href: string }[] }) => (
-    <AccordionItem value={trigger} className="border-violet-700">
-      <AccordionTrigger className="text-violet-100 hover:text-violet-400 py-2 text-base">{trigger}</AccordionTrigger>
+    <AccordionItem value={trigger} className="border-none">
+      <AccordionTrigger className="font-medium flex items-center text-base transition-colors hover:text-violet-400 text-violet-100 px-2 py-2 justify-between w-full">
+        {trigger}
+      </AccordionTrigger>
       <AccordionContent>
-        <div className="flex flex-col">
+        <div className="flex flex-col pl-4">
           {items.map((item) => (
             <NavLink key={item.href} href={item.href}>
               {item.label}
@@ -109,7 +112,7 @@ export function NavMenu() {
       console.error("SignIn object is not available");
       return;
     }
-  
+
     signIn.authenticateWithRedirect({
       strategy: "oauth_discord",
       redirectUrl: "/",
@@ -180,12 +183,17 @@ export function NavMenu() {
                   </Button>
                 </SheetClose>
               </div>
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-1">
                 <Accordion type="single" collapsible className="w-full">
                   <MobileNavAccordion trigger="Play" items={playItems} />
+                </Accordion>
+                <Separator className="my-2 bg-[#6D27D9]" />
+                <Accordion type="single" collapsible className="w-full">
                   <MobileNavAccordion trigger="Leaderboards" items={leaderboardItems} />
                 </Accordion>
+                <Separator className="my-2 bg-[#6D27D9]" />
                 <NavLink href="#">Socials</NavLink>
+                <Separator className="my-2 bg-[#6D27D9]" />
                 <NavLink href="#">Store</NavLink>
               </div>
               <div className="flex flex-col gap-2 mt-4">
