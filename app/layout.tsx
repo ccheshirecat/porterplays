@@ -28,6 +28,7 @@ export default function RootLayout({
         <NavMenu />
         {children}
         <Footer />
+        <Analytics />
       </body>
     </html>
     </ClerkProvider>
