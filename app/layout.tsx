@@ -9,6 +9,7 @@ import {
   SignedOut,
   UserButton
 } from '@clerk/nextjs'
+import { Analytics } from "@vercel/analytics/react"
 
 export const metadata: Metadata = {
   title: "porterplays",

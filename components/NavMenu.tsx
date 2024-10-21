@@ -7,6 +7,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +29,11 @@ export function NavMenu() {
   const { isLoaded, signOut } = useAuth()
   const { user } = useUser()
   const { signIn } = useSignIn()
+
+  const mobileMenuVariants = {
+    open: { opacity: 1, x: 0 },
+    closed: { opacity: 0, x: "100%" },
+  }
 
   const toggleMenu = () => setIsOpen(!isOpen)
 
@@ -168,62 +174,79 @@ export function NavMenu() {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-violet-950 text-violet-100">
-              <div className="flex justify-between items-center mb-4">
-                <Button variant="ghost" size="icon" asChild className="text-violet-100 hover:bg-violet-800">
-                  <Link href="#" onClick={() => setIsOpen(false)}>
-                    <Home className="h-6 w-6" />
-                    <span className="sr-only">Home</span>
-                  </Link>
-                </Button>
-                <SheetClose asChild>
-                  <Button variant="ghost" size="icon" className="text-violet-100 hover:bg-violet-800">
-                    <X className="h-6 w-6" />
-                    <span className="sr-only">Close</span>
-                  </Button>
-                </SheetClose>
-              </div>
-              <div className="flex flex-col space-y-1">
-                <Accordion type="single" collapsible className="w-full">
-                  <MobileNavAccordion trigger="Play" items={playItems} />
-                </Accordion>
-                <Separator className="my-2 bg-[#6D27D9]" />
-                <Accordion type="single" collapsible className="w-full">
-                  <MobileNavAccordion trigger="Leaderboards" items={leaderboardItems} />
-                </Accordion>
-                <Separator className="my-2 bg-[#6D27D9]" />
-                <NavLink href="#">Socials</NavLink>
-                <Separator className="my-2 bg-[#6D27D9]" />
-                <NavLink href="#">Store</NavLink>
-              </div>
-              <div className="flex flex-col gap-2 mt-4">
-                {user ? (
-                  <>
-                    <span className="text-violet-100">Hello, {user.fullName || user.primaryEmailAddress?.emailAddress}</span>
-                    <Button variant="outline" onClick={() => {}}>
-                      <User className="mr-2 h-4 w-4" />
-                      Profile
-                    </Button>
-                    <Button variant="outline" onClick={() => {}}>
-                      <Settings className="mr-2 h-4 w-4" />
-                      My Account
-                    </Button>
-                    <Button variant="outline" onClick={() => signOut()}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Sign Out
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    onClick={handleDiscordSignIn}
-                    className="w-full bg-violet-500 hover:bg-violet-600 text-white border-none transition-colors duration-200"
+            <AnimatePresence>
+              {isOpen && (
+                <SheetContent
+                  side="right"
+                  className="w-[300px] sm:w-[400px] bg-violet-950 text-violet-100 p-0"
+                  forceMount
+                >
+                  <motion.div
+                    initial="closed"
+                    animate="open"
+                    exit="closed"
+                    variants={mobileMenuVariants}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="h-full p-6"
                   >
-                    <DiscordLogoIcon className="mr-2 h-5 w-5" />
-                    Continue with Discord
-                  </Button>
-                )}
-              </div>
-            </SheetContent>
+                    <div className="flex justify-between items-center mb-4">
+                      <Button variant="ghost" size="icon" asChild className="text-violet-100 hover:bg-violet-800">
+                        <Link href="#" onClick={() => setIsOpen(false)}>
+                          <Home className="h-6 w-6" />
+                          <span className="sr-only">Home</span>
+                        </Link>
+                      </Button>
+                      <SheetClose asChild>
+                        <Button variant="ghost" size="icon" className="text-violet-100 hover:bg-violet-800">
+                          <X className="h-6 w-6" />
+                          <span className="sr-only">Close</span>
+                        </Button>
+                      </SheetClose>
+                    </div>
+                    <div className="flex flex-col space-y-1">
+                      <Accordion type="single" collapsible className="w-full">
+                        <MobileNavAccordion trigger="Play" items={playItems} />
+                      </Accordion>
+                      <Separator className="my-2 bg-[#6D27D9]" />
+                      <Accordion type="single" collapsible className="w-full">
+                        <MobileNavAccordion trigger="Leaderboards" items={leaderboardItems} />
+                      </Accordion>
+                      <Separator className="my-2 bg-[#6D27D9]" />
+                      <NavLink href="#">Socials</NavLink>
+                      <Separator className="my-2 bg-[#6D27D9]" />
+                      <NavLink href="#">Store</NavLink>
+                    </div>
+                    <div className="flex flex-col gap-2 mt-4">
+                      {user ? (
+                        <>
+                          <span className="text-violet-100">Hello, {user.fullName || user.primaryEmailAddress?.emailAddress}</span>
+                          <Button variant="outline" onClick={() => {}}>
+                            <User className="mr-2 h-4 w-4" />
+                            Profile
+                          </Button>
+                          <Button variant="outline" onClick={() => {}}>
+                            <Settings className="mr-2 h-4 w-4" />
+                            My Account
+                          </Button>
+                          <Button variant="outline" onClick={() => signOut()}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            Sign Out
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          onClick={handleDiscordSignIn}
+                          className="w-full bg-violet-500 hover:bg-violet-600 text-white border-none transition-colors duration-200"
+                        >
+                          <DiscordLogoIcon className="mr-2 h-5 w-5" />
+                          Continue with Discord
+                        </Button>
+                      )}
+                    </div>
+                  </motion.div>
+                </SheetContent>
+              )}
+            </AnimatePresence>
           </Sheet>
         </div>
       </div>

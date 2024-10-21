@@ -1,7 +1,10 @@
+"use client"
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import hero from "@/components/images/porter2.png"
+import { motion } from "framer-motion"
+
 export default function HeroSection() {
   return (
     <section className="relative py-12 md:mt-4 py-24 lg:mt-4 py-32 bg-background">
@@ -26,7 +29,7 @@ export default function HeroSection() {
             </div>
           </div>
           <div className="flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-md aspect-square rounded-lg overflow-hidden">
+            <motion.div initial={{ opacity: 0, y: -50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="relative w-full max-w-md aspect-square rounded-lg overflow-hidden">
               <Image
                 src={hero}
                 alt="Hero image"
@@ -34,7 +37,7 @@ export default function HeroSection() {
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
