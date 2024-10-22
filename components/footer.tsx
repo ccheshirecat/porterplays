@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Facebook, Twitter, Github, Dribbble } from "lucide-react"
-import porter3 from "@/components/images/porter3.png"
+import porter3 from "@/components/images/porter1.png"
 
 export default function Footer() {
   return (

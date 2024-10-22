@@ -21,7 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Separator } from "@/components/ui/separator"
-import navlogo from "@/components/images/porter1.png"
+import navlogo from "@/components/images/porter3.png"
 import { useAuth, useSignIn, useUser } from '@clerk/nextjs'
 
 export function NavMenu() {
