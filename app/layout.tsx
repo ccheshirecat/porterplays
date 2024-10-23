@@ -26,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-background text-foreground font-sans">
         <NavMenu />
+        <div className="h-20"></div>
         {children}
         <Footer />
         <Analytics />

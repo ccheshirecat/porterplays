@@ -127,17 +127,17 @@ export function NavMenu() {
   };
 
   const playItems = [
-    { label: "PlayShuffle", href: "#playshuffle" },
-    { label: "PlayGoated", href: "#playgoated" },
+    { label: "PlayShuffle", href: "/play/shuffle" },
+    { label: "PlayGoated", href: "/play/goated" },
   ]
 
   const leaderboardItems = [
-    { label: "Shuffle", href: "#shuffle-leaderboard" },
-    { label: "Goated", href: "#goated-leaderboard" },
+    { label: "Shuffle", href: "/leaderboards/shuffle" },
+    { label: "Goated", href: "/leaderboards/goated" },
   ]
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 bg-background shadow-sm">
+    <motion.nav className="fixed inset-x-0 top-0 z-50 bg-background shadow-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.25 }}>
       <div className="w-full max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16 items-center">
           <Link href="#" className="flex items-center" prefetch={false}>
@@ -145,11 +145,11 @@ export function NavMenu() {
             <span className="self-center text-xl font-semibold whitespace-nowrap text-primary ml-2">porterplays</span>
           </Link>
           <div className="hidden md:flex items-center space-x-4">
-            <NavLink href="#">Home</NavLink>
+            <NavLink href="/">Home</NavLink>
             <NavDropdown trigger="Play" items={playItems} />
             <NavDropdown trigger="Leaderboards" items={leaderboardItems} />
-            <NavLink href="#">Socials</NavLink>
-            <NavLink href="#">Store</NavLink>
+            <NavLink href="/socials">Socials</NavLink>
+            <NavLink href="/store">Store</NavLink>
           </div>
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
@@ -250,6 +250,6 @@ export function NavMenu() {
           </Sheet>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   )
 }
