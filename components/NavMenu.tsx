@@ -191,7 +191,7 @@ export function NavMenu() {
                   >
                     <div className="flex justify-between items-center mb-4">
                       <Button variant="ghost" size="icon" asChild className="text-violet-100 hover:bg-violet-800">
-                        <Link href="#" onClick={() => setIsOpen(false)}>
+                        <Link href="/" onClick={() => setIsOpen(false)}>
                           <Home className="h-6 w-6" />
                           <span className="sr-only">Home</span>
                         </Link>
@@ -212,9 +212,9 @@ export function NavMenu() {
                         <MobileNavAccordion trigger="Leaderboards" items={leaderboardItems} />
                       </Accordion>
                       <Separator className="my-2 bg-[#6D27D9]" />
-                      <NavLink href="#">Socials</NavLink>
+                      <NavLink href="/socials">Socials</NavLink>
                       <Separator className="my-2 bg-[#6D27D9]" />
-                      <NavLink href="#">Store</NavLink>
+                      <NavLink href="/store">Store</NavLink>
                     </div>
                     <div className="flex flex-col gap-2 mt-4">
                       {user ? (
