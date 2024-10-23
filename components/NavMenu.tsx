@@ -1,27 +1,34 @@
 'use client'
 
-import { useState } from 'react'
-import { motion, AnimatePresence } from "framer-motion"
 import { CircleUser, Menu, ChevronDown, User, Settings, LogOut, Home, X } from 'lucide-react'
 import { DiscordLogoIcon } from "@radix-ui/react-icons"
+import { useState } from 'react'
 import Link from "next/link"
 import Image from "next/image"
-import { useSession, signIn, signOut } from "next-auth/react"
-
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { motion, AnimatePresence } from "framer-motion"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Separator } from "@/components/ui/separator"
 import navlogo from "@/components/images/porter3.png"
-import SignIn from "@/components/sign-in"
+import { useAuth, useSignIn, useUser } from '@clerk/nextjs'
 
 export function NavMenu() {
   const [isOpen, setIsOpen] = useState(false)
-  const { data: session, status } = useSession(); // session contains user details if logged in, status shows if session is loading
-  const user = session?.user; // session.user gives you the authenticated user object
-  
-  // signIn and signOut are directly available from next-auth
+  const { isLoaded, signOut } = useAuth()
+  const { user } = useUser()
+  const { signIn } = useSignIn()
 
   const mobileMenuVariants = {
     open: { opacity: 1, x: 0 },
@@ -105,6 +112,20 @@ export function NavMenu() {
       </DropdownMenuContent>
     </DropdownMenu>
   )
+
+  const handleDiscordSignIn = () => {
+    if (!signIn) {
+      console.error("SignIn object is not available");
+      return;
+    }
+
+    signIn.authenticateWithRedirect({
+      strategy: "oauth_discord",
+      redirectUrl: "/",
+      redirectUrlComplete: "https://porterplays.vercel.app/",
+    });
+  };
+
   const playItems = [
     { label: "PlayShuffle", href: "/play/shuffle" },
     { label: "PlayGoated", href: "/play/goated" },
@@ -133,11 +154,17 @@ export function NavMenu() {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <>
-                <span className="text-violet-100">Hello, {user?.name || user?.email}</span>
+                <span className="text-violet-100">Hello, {user.fullName || user.primaryEmailAddress?.emailAddress}</span>
                 <UserMenu />
               </>
             ) : (
-              <SignIn />
+              <Button
+                onClick={handleDiscordSignIn}
+                className="w-full bg-violet-500 hover:bg-violet-600 text-white border-none transition-colors duration-200"
+              >
+                <DiscordLogoIcon className="mr-2 h-5 w-5" />
+                Continue with Discord
+              </Button>
             )}
           </div>
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -192,7 +219,7 @@ export function NavMenu() {
                     <div className="flex flex-col gap-2 mt-4">
                       {user ? (
                         <>
-                          <span className="text-violet-100">Hello, {user?.name || user?.email}</span>
+                          <span className="text-violet-100">Hello, {user.fullName || user.primaryEmailAddress?.emailAddress}</span>
                           <Button variant="outline" onClick={() => {}}>
                             <User className="mr-2 h-4 w-4" />
                             Profile
@@ -207,7 +234,13 @@ export function NavMenu() {
                           </Button>
                         </>
                       ) : (
-                        <SignIn />
+                        <Button
+                          onClick={handleDiscordSignIn}
+                          className="w-full bg-violet-500 hover:bg-violet-600 text-white border-none transition-colors duration-200"
+                        >
+                          <DiscordLogoIcon className="mr-2 h-5 w-5" />
+                          Continue with Discord
+                        </Button>
                       )}
                     </div>
                   </motion.div>
